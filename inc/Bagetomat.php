@@ -14,7 +14,6 @@ class Bagetomat
 
     public function buyProduct($insertedCoins, $productCode)
     {
-
         if (empty($insertedCoins)) {
             return("Nic jsi nevhodil!");
         }
@@ -31,15 +30,23 @@ class Bagetomat
         
 
         $returnCoins = $insertedCoins - $productPrice;
-        if ($insertedCoins >= $productPrice && $productCount > 0 && $machineCoins >= $returnCoins) {
-            $productCount--;
-            $machineCoins -= $returnCoins;
-            $this->pickupSlot = $productName;
-            $this->returnCoinsSlot = $returnCoins;
-            self::saveChanges($productCode, $productCount, $machineCoins);
-            return true;
+        if ($insertedCoins >= $productPrice) {
+            if ($productCount > 0) {
+                if ($machineCoins >= $returnCoins) {
+                    $productCount--;
+                    $machineCoins -= $returnCoins;
+                    $this->pickupSlot = $productName;
+                    $this->returnCoinsSlot = $returnCoins;
+                    self::saveChanges($productCode, $productCount, $machineCoins);
+                    return true;
+                } else {
+                    return "Nedostatek mincí v automatu na vrácení!";
+                }
+            } else {
+                return "Nedostatek zvoleného produktu v automatu!";
+            }
         } else {
-            return false;
+            return "Nevhodil jsi dostatek mincí!";
         }
     }
 
@@ -79,6 +86,16 @@ class Bagetomat
         return $stats['machineCoins'];
     }
 
+    public function getPickupSlot()
+    {
+        return $this->pickupSlot;
+    }
+
+    public function getReturnCoinsSlot()
+    {
+        return $this->returnCoinsSlot;
+    }
+
     private function getProductName($productCode)
     {
         $stats = self::getStats();
@@ -107,7 +124,6 @@ class Bagetomat
         $stats = self::getStats();
         $stats['products'][$productCode]['count'] = $productCount;
         $stats['machineCoins'] = $machineCoins;
-        var_dump($stats);
         file_put_contents("stats.json", json_encode($stats, JSON_PRETTY_PRINT));
     }
 }

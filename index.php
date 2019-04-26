@@ -3,6 +3,15 @@ require_once("inc/Bagetomat.php");
 $bagetomat = new Bagetomat();
 $stats = json_decode(file_get_contents("stats.json"), true);
 
+$submit = filter_input(INPUT_POST, "submit");
+
+if (!empty($submit)) {
+    $insertedCoins = filter_input(INPUT_POST, "insertedCoins");
+    $productCode = filter_input(INPUT_POST, "productCode");
+
+    $status = $bagetomat->buyProduct($insertedCoins, $productCode);    
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +40,7 @@ $stats = json_decode(file_get_contents("stats.json"), true);
         <tr>
         <?php
         foreach ($stats['products'] as $key => $product) {
-        ?>
+            ?>
         <tr>
             <td><?= $key ?></td>
             <td><?= $product['name'] ?></td>
@@ -39,7 +48,7 @@ $stats = json_decode(file_get_contents("stats.json"), true);
             <td><?= $product['count'] ?></td>
         </tr>
         <?php
-            }
+        }
         ?>
     </table>
 
@@ -49,7 +58,7 @@ $stats = json_decode(file_get_contents("stats.json"), true);
         <label for="productCode">Naťukej kód =></label><br>
         <?php
         foreach ($stats['products'] as $key => $product) {
-        ?>
+            ?>
         <?= $key ?><input type="radio" id="productCode" name="productCode" value="<?= $key ?>"><br>
         <?php
         }
@@ -58,19 +67,15 @@ $stats = json_decode(file_get_contents("stats.json"), true);
     </form>
 
 
-    <?php
-    if (!empty(filter_input(INPUT_POST, "submit"))) {
-        $insertedCoins = filter_input(INPUT_POST, "insertedCoins");
-        $productCode = filter_input(INPUT_POST, "productCode");
+    <?php 
+    if (!empty($submit)) {
+        ?>
+        <span>Status: <?= $status ?></span><br>
+        <span>Koupil sis: <?= $bagetomat->getPickupSlot() ?></span>
+        <?php
         var_dump($insertedCoins);
         var_dump($productCode);
-        // TODO Create buy function and call it here
-
-        $status = $bagetomat->buyProduct($insertedCoins, $productCode);
-        echo $status;
     }
-
-
     ?>
 </body>
 
