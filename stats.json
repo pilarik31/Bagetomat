@@ -1,10 +1,10 @@
 {
-    "machineCoins": 2470,
+    "machineCoins": 300,
     "products": {
         "1A": {
             "name": "Nenazrana Kaja",
             "price": 200,
-            "count": 1
+            "count": 20
         },
         "2C": {
             "name": "Mlsny Koky",
@@ -14,7 +14,7 @@
         "3B": {
             "name": "Liny Jenda",
             "price": 20,
-            "count": 18
+            "count": 17
         }
     }
 }
