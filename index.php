@@ -65,7 +65,9 @@ $stats = json_decode(file_get_contents("stats.json"), true);
         var_dump($insertedCoins);
         var_dump($productCode);
         // TODO Create buy function and call it here
-        
+
+        $status = $bagetomat->buyProduct($insertedCoins, $productCode);
+        echo $status;
     }
 
 

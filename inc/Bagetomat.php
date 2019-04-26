@@ -4,13 +4,43 @@ class Bagetomat
     private $machineCoins;
     private $returnCoinsSlot;
     private $pickupSlot;
+    private $productCount;
 
     public function __construct()
     {
-        $this->machineCoins = self::getMachineCoins();
         $this->returnCoinsSlot = null;
         $this->pickupSlot = null;
+    }
+
+    public function buyProduct($insertedCoins, $productCode)
+    {
+
+        if (empty($insertedCoins)) {
+            return("Nic jsi nevhodil!");
+        }
+
+        if (empty($productCode)) {
+            return("Nic jsi nestiskl!");
+        }
         
+        $machineCoins = self::getMachineCoins();
+        $productName = self::getProductName($productCode);
+        $productPrice = self::getProductPrice($productCode);
+        $productCount = self::getProductCount($productCode);
+
+        
+
+        $returnCoins = $insertedCoins - $productPrice;
+        if ($insertedCoins >= $productPrice && $productCount > 0 && $machineCoins >= $returnCoins) {
+            $productCount--;
+            $machineCoins -= $returnCoins;
+            $this->pickupSlot = $productName;
+            $this->returnCoinsSlot = $returnCoins;
+            self::saveChanges($productCode, $productCount, $machineCoins);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
@@ -37,15 +67,47 @@ class Bagetomat
                 )
             );
             file_put_contents("stats.json", json_encode($json, JSON_PRETTY_PRINT));
-            
+            return true;
         } else {
             exit("Wrong factory reset code!");
         }
     }
 
-    public function getMachineCoins($file = "stats.json")
+    public function getMachineCoins()
     {
-        $stats = json_decode(file_get_contents($file), true);
+        $stats = self::getStats();
         return $stats['machineCoins'];
+    }
+
+    private function getProductName($productCode)
+    {
+        $stats = self::getStats();
+        return $stats['products'][$productCode]['name'];
+    }
+
+    private function getProductPrice($productCode)
+    {
+        $stats = self::getStats();
+        return $stats['products'][$productCode]['price'];
+    }
+
+    private function getProductCount($productCode)
+    {
+        $stats = self::getStats();
+        return $stats['products'][$productCode]['count'];
+    }
+
+    private function getStats($file = "stats.json")
+    {
+        return json_decode(file_get_contents($file), true);
+    }
+
+    private function saveChanges($productCode, $productCount, $machineCoins)
+    {
+        $stats = self::getStats();
+        $stats['products'][$productCode]['count'] = $productCount;
+        $stats['machineCoins'] = $machineCoins;
+        var_dump($stats);
+        file_put_contents("stats.json", json_encode($stats, JSON_PRETTY_PRINT));
     }
 }
