@@ -1,7 +1,7 @@
 <?php
 require_once("inc/Bagetomat.php");
 $bagetomat = new Bagetomat();
-$stats = json_decode(file_get_contents("stats.json"), true);
+$stats = $bagetomat->getStats();
 
 $submit = filter_input(INPUT_POST, "submit");
 
@@ -71,7 +71,8 @@ if (!empty($submit)) {
     if (!empty($submit)) {
         ?>
         <span>Status: <?= $status ?></span><br>
-        <span>Koupil sis: <?= $bagetomat->getPickupSlot() ?></span>
+        <span>Koupil sis: <?= $bagetomat->getPickupSlot() ?></span><br>
+        <span>Automat ti vrátí: <?= $bagetomat->getReturnCoinsSlot() ?></span>
         <?php
         var_dump($insertedCoins);
         var_dump($productCode);

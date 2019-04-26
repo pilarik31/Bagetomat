@@ -35,6 +35,7 @@ class Bagetomat
                 if ($machineCoins >= $returnCoins) {
                     $productCount--;
                     $machineCoins -= $returnCoins;
+                    $machineCoins += $productPrice;
                     $this->pickupSlot = $productName;
                     $this->returnCoinsSlot = $returnCoins;
                     self::saveChanges($productCode, $productCount, $machineCoins);
@@ -114,7 +115,7 @@ class Bagetomat
         return $stats['products'][$productCode]['count'];
     }
 
-    private function getStats($file = "stats.json")
+    public function getStats($file = "stats.json")
     {
         return json_decode(file_get_contents($file), true);
     }
